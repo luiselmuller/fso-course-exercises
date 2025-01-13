@@ -1,4 +1,21 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react'
+
+const Statistics = ({ good, neutral, bad }) => {
+  const total = good + neutral + bad
+  return (
+    <div>
+      <h2>Statistics</h2>
+
+      <p>good: {good}</p>
+      <p>neutral: {neutral}</p>
+      <p>bad: {bad}</p>
+      <p>all: {good + neutral + bad}</p>
+      <p>average: {(good - bad) / total}</p>
+      <p>positive: {(good / total) * 100} %</p>
+    </div>
+  )
+}
 
 const Button = ({text, onClick}) => <button onClick={onClick}>{text}</button>
 
@@ -20,14 +37,8 @@ const App = () => {
       <Button text="neutral" onClick={handleNeutral} />
       <Button text="bad" onClick={handleBad} />
 
-      <h2>Statistics</h2>
+      <Statistics good={good} neutral={neutral} bad={bad} />
 
-      <p>good: {good}</p>
-      <p>neutral: {neutral}</p>
-      <p>bad: {bad}</p>
-      <p>all: {good + neutral + bad}</p>
-      <p>average: {(good - bad) / (good + neutral + bad)}</p>
-      <p>positive: {(good / (good + neutral + bad)) * 100} %</p>
     </div>
   )
 }
