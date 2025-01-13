@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import React from 'react'
 
+// Already had separate module
 const Header = ({ course }) => {
     return (
       <div>
