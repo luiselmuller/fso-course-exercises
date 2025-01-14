@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import countryService from './services/countries'
+import CountryList from './components/CountryList'
+import Country from './components/Country'
 
 const App = () => {
   const [country, setCountry] = useState('')
@@ -7,12 +9,12 @@ const App = () => {
 
   useEffect(() => {
     if(country) {
-      axios.get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
-      .then(res => {
-        const filteredCountries = res.data.filter(c => c.name.common.toLowerCase().includes(country.toLowerCase()))
-        setCountries(filteredCountries)
+      countryService.getAll()
+        .then(countries => {
+            setCountries(countries.filter(c => 
+              c.name.common.toLowerCase().includes(country.toLowerCase())
+            ))
       })
-      .catch(err => console.log(err))
     }
     else {
       setCountries([])
@@ -29,34 +31,14 @@ const App = () => {
     <div>
       <p>find countries</p>
       <input type="text" onChange={onCountryChange} placeholder="search" />
-      <ul>
-        {countries.length > 10 ? 
-          <p>There are {countries.length} countries matching {country}, specify another filter</p> :
-          countries.length === 1 ? countries.map(country => {
-            return (
-              <div key={country.name.common}>
-                <p>{country.name.common}</p>
-                <p>area: {country.area}</p>
 
-                <p>Languages: </p>
-                <ul>
-                  {
-                    Object.entries(country.languages).map(([key, value]) => 
-                      <li key={key}>{value}</li>
-                    )
-                  }
-                </ul>
-                <img src={country.flags.png} alt={country.name.common} />
-              </div>
-            )
-          }) : 
-          countries.map(country => 
-            <div key={country.name.common}>
-              <p>{country.name.common}</p>
-            </div>
-          )}
-      </ul>
-      
+      <div>
+        {
+          countries.length > 10 ? <p>{countries.length} matches, specify another filter</p> :
+          countries.length === 1 ? <Country country={countries[0]} /> :
+          <CountryList countries={countries} />
+        }
+      </div>
     </div>
   )
 }
