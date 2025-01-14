@@ -14,6 +14,7 @@ const App = () => {
   useEffect(() => {
     personsService.getAll()
       .then(persons => setPersons(persons))
+      .catch(error => console.log(error))
   }, [])
 
   const addPerson = (event) => {
@@ -24,14 +25,25 @@ const App = () => {
       setNewNumber('')
     }
     else {
-        personsService.create({ name: newName, number: newNumber, id: persons.length + 1 })
+        personsService.create({ name: newName, number: newNumber, id: (persons.length + 1).toString() })
           .then(person => {
               setPersons(persons.concat(person))
           })
+          .catch(error => console.log(error))
         setNewName('')
         setNewNumber('')
     }
+  }
 
+  const delPerson = (id) => {
+    const person = persons.find(person => person.id === id)
+    // console.log(person)
+    if (window.confirm(`Do you want to delete ${person.name}?`)) {
+      // console.log(person.name, person.id)
+      personsService.deletePerson(person.id)
+      .then(person => setPersons(persons.filter(person => person.id !== id)))
+      .catch(error => console.log(error))
+    }
   }
 
   const onFilterChange = (event) => {
@@ -64,6 +76,7 @@ const App = () => {
       
       <h2>Numbers</h2>
       <Persons 
+        delPerson={delPerson}
         persons={persons} 
         filter={filter}
       />
