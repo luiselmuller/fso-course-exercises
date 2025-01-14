@@ -11,7 +11,7 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [alertMessage, setAlertMessage] = useState(null)
+  const [alertMessage, setAlertMessage] = useState({ alert: '', type: 'success'})
 
   // Display all people in the phonebook
   useEffect(() => {
@@ -26,47 +26,45 @@ const App = () => {
     if (persons.some(person => person.name === newName)) {
       if (window.confirm(`${newName} is already in the phonebook, do you want to replace this persons number?`)) {
         const personToUpdate = persons.find(person => person.name === newName)
+
         personsService.update(personToUpdate.id, { ...personToUpdate, number: newNumber })
           .then(
             updatedPerson => {
               setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
-              setAlertMessage(`Updated ${personToUpdate.name}'s number to ${newNumber}`)
-              setTimeout(() => { setAlertMessage(null) }, 5000)
+
+              displayNotification({alert: `Updated ${personToUpdate.name}'s number to ${newNumber}`, type: 'success'})
             }
           )
           .catch(error => console.log(error))
         
       }
-      setNewName('')
-      setNewNumber('')
+      clearForm()
     }
     else {
         personsService.create({ name: newName, number: newNumber, id: (persons.length + 1).toString() })
           .then(person => {
               setPersons(persons.concat(person))
-              setAlertMessage(`Added ${person.name}`)
-              setTimeout(() => { setAlertMessage(null) }, 5000)
+
+              displayNotification({alert: `Added ${person.name}`, type: 'success'})
           })
-          .catch(error => console.log(error))
-        setNewName('')
-        setNewNumber('')
+          .catch(error => setAlertMessage(error.message))
+        clearForm()
     }
   }
 
   // Delete person from phonebook
   const delPerson = (id) => {
     const person = persons.find(person => person.id === id)
-    // console.log(person)
+    
     if (window.confirm(`Do you want to delete ${person.name}?`)) {
-      setAlertMessage(`Deleted ${person.name}`)
-      // console.log(person.name, person.id)
-      personsService.deletePerson(person.id)
-      .then(() =>{
-        setPersons(persons.filter(person => person.id !== id))
-        setAlertMessage(`Deleted ${person.name}`)
-        setTimeout(() => { setAlertMessage(null) }, 5000)
-      })
-      .catch(error => console.log(error))
+        personsService.deletePerson(person.id)
+        .then(() => {
+            setPersons(persons.filter(person => person.id !== id))
+            displayNotification({alert: `Deleted ${person.name}`, type: 'success'})
+        })
+        .catch(error => {
+            displayNotification({alert: `Error deleting person: ${error.message} This person was already deleted, please refresh the page`, type: 'error'})
+        })
     }
   }
 
@@ -82,15 +80,20 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  // Clear alert message after a few seconds 
-  useEffect(() => {
-    setTimeout(() => setAlertMessage(''), 4000)
-  }, [alertMessage])
+  const displayNotification = (alertObject) => {
+    setAlertMessage(alertObject)
+    setTimeout(() => { setAlertMessage({alert: '', type: 'success'}) }, 5000)
+  }
 
+  const clearForm = () => {
+    setNewName('')
+    setNewNumber('')
+  }
+  
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={alertMessage} />
+      <Notification message={alertMessage.alert} type={alertMessage.type} />
 
       <Filter 
         onFilterChange={onFilterChange}
