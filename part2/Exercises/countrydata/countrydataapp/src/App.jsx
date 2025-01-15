@@ -15,6 +15,7 @@ const App = () => {
               c.name.common.toLowerCase().includes(country.toLowerCase())
             ))
       })
+      .catch(err => console.log(err))
     }
     else {
       setCountries([])
