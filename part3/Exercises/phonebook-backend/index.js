@@ -27,11 +27,20 @@ const data = [
 ]
 
 app.get('/', (request, response) => {
-    response.send('<h1>Phonebook API</h1> <a href="/api/persons">View all persons</a>')
+    response.send('<h1>Phonebook API</h1> <a href="/info">Information</a>')
 })
 
 app.get('/api/persons', (request, response) => {
     response.json(data)
+})
+
+app.get('/info', (request, response) => {
+    const page = `
+        <h1>Info</h1>
+        <p>There is information for ${data.length} people in the phonebook.</p>
+        <p>Last updated: ${new Date()}</p>
+    `
+    response.send(page)
 })
 
 const PORT = 3001
