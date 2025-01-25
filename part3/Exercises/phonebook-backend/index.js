@@ -3,7 +3,7 @@ const app = express()
 
 app.use(express.json())
 
-const data = [
+let data = [
     { 
       "id": "1",
       "name": "Arto Hellas", 
@@ -44,6 +44,13 @@ app.get('/api/persons/:id', (request, response) => {
     else {
       response.status(404).send('404 Person Not Found')
     }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    data = data.filter(p => p.id !== id)
+
+    response.status(204).end()
 })
 
 app.get('/info', (request, response) => {
