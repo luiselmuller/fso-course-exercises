@@ -26,6 +26,11 @@ let data = [
     }
 ]
 
+const generateId = () => {
+  let id = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`
+  return id
+}
+
 app.get('/', (request, response) => {
     response.send('<h1>Phonebook API</h1> <a href="/info">Information</a>')
 })
@@ -60,6 +65,26 @@ app.get('/info', (request, response) => {
         <p>Last updated: ${new Date()}</p>
     `
     response.send(page)
+})
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if (!body.name || !body.number) {
+      return response.status(400).json({
+        error: 'Name or number is missing'
+      })
+    }
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateId()
+    }
+
+    data = data.concat(person)
+
+    response.json(person)
 })
 
 const PORT = 3001
