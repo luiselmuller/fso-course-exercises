@@ -34,6 +34,18 @@ app.get('/api/persons', (request, response) => {
     response.json(data)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const person = data.find(p => p.id === id)
+
+    if (person) {
+        response.json(person)
+    }
+    else {
+      response.status(404).send('404 Person Not Found')
+    }
+})
+
 app.get('/info', (request, response) => {
     const page = `
         <h1>Info</h1>
