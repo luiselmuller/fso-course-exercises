@@ -3,8 +3,23 @@ const morgan = require('morgan')
 const app = express() 
 
 app.use(express.json())
-app.use(morgan('tiny'))
 
+morgan.token('body', request => { return JSON.stringify(request.body) })
+
+app.use(
+  morgan(function (tokens, req, res) {
+    let addedInfo = req => req.method === 'POST' ? tokens.body(req, res) : ''
+    
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'), '-',
+      tokens['response-time'](req, res), 'ms',
+      addedInfo(req)
+    ].join(' ')
+  })
+)
 
 let data = [
     { 
@@ -71,6 +86,8 @@ app.get('/info', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
+    morgan.token('body', (request, response ) => { return JSON.stringify(request.body) })
+
     const body = request.body
 
     if (!body.name) {
@@ -98,6 +115,8 @@ app.post('/api/persons', (request, response) => {
     }
 
     data = data.concat(person)
+    
+    morgan('tiny :body')
 
     response.json(person)
 })
