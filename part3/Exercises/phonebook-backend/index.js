@@ -4,7 +4,7 @@ const cors = require('cors')
 const app = express() 
 
 app.use(express.json())
-
+app.use(express.static('dist'))
 app.use(cors())
 
 morgan.token('body', request => { return JSON.stringify(request.body) })
@@ -52,7 +52,7 @@ const generateId = () => {
   return id
 }
 
-app.get('/', (request, response) => {
+app.get('/info', (request, response) => {
     response.send('<h1>Phonebook API</h1> <a href="/info">Information</a>')
 })
 
