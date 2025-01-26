@@ -47,7 +47,7 @@ const App = () => {
 
               displayNotification({alert: `Added ${person.name}`, type: 'success'})
           })
-          .catch(error => setAlertMessage(error.message))
+          .catch(error => displayNotification({alert: error.response.data.error, type: 'error'}))
         clearForm()
     }
   }
