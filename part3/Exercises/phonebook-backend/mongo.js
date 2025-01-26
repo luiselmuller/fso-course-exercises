@@ -9,7 +9,7 @@ let password = process.argv[2]
 let name = process.argv[3]
 let number = process.argv[4]
 
-const url = `mongodb+srv://luisel:${password}@fso.opw2d.mongodb.net/phonebook?retryWrites=true&w=majority`
+const url = ``
 
 mongoose.set('strictQuery', true)
 

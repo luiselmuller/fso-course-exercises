@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
+
 const app = express() 
 
 app.use(express.json())
@@ -57,19 +60,16 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(data)
+  Person.find({}).then(
+    result => response.json(result)
+  )
 })
 
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const person = data.find(p => p.id === id)
-
-    if (person) {
-        response.json(person)
-    }
-    else {
-      response.status(404).send('404 Person Not Found')
-    }
+    Person.findOne({ _id: id })
+    .then(result => response.json(result))
+    .catch(error => response.status(404).send('404 Person Not Found'))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -80,12 +80,18 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.get('/info/details', (request, response) => {
-    const page = `
-        <h1>Info</h1>
-        <p>There is information for ${data.length} people in the phonebook.</p>
-        <p>Last updated: ${new Date()}</p>
-    `
-    response.send(page)
+    Person.find({}).then(
+        result => {
+          const page = `
+            <h1>Info</h1>
+            <p>There is information for ${result.length} people in the phonebook.</p>
+            <p>Last updated: ${new Date()}</p>
+          `;
+          response.send(page)
+        }
+    ).catch(
+        error => response.status(500).send('500 Error fetching data')
+    )
 })
 
 app.post('/api/persons', (request, response) => {
