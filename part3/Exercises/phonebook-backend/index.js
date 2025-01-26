@@ -6,8 +6,8 @@ const Person = require('./models/person')
 
 const app = express() 
 
-app.use(express.json())
 app.use(express.static('dist'))
+app.use(express.json())
 app.use(cors())
 
 morgan.token('body', request => { return JSON.stringify(request.body) })
@@ -65,7 +65,7 @@ app.get('/api/persons', (request, response) => {
   )
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
     .then(result => {
       if (result) {
@@ -75,14 +75,7 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).send('404 Person Not Found')
       }
     })
-    .catch(error => response.status(500).end())
-})
-
-app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    data = data.filter(p => p.id !== id)
-
-    response.status(204).end()
+    .catch(error => next(error))
 })
 
 app.get('/info/details', (request, response) => {
@@ -98,6 +91,16 @@ app.get('/info/details', (request, response) => {
     ).catch(
         error => response.status(500).send('500 Error fetching data')
     )
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => 
+      response.status(204).end()
+    )
+    .catch(error => next(error))
+
+  
 })
 
 app.post('/api/persons', (request, response) => {
@@ -135,6 +138,18 @@ app.post('/api/persons', (request, response) => {
     })
 
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
