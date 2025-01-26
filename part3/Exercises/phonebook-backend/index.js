@@ -88,9 +88,7 @@ app.get('/info/details', (request, response) => {
           `;
           response.send(page)
         }
-    ).catch(
-        error => response.status(500).send('500 Error fetching data')
-    )
+    ).catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
