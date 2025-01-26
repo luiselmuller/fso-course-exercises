@@ -65,6 +65,7 @@ app.get('/api/persons', (request, response) => {
   )
 })
 
+// done
 app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
     .then(result => {
@@ -78,6 +79,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+// done
 app.get('/info/details', (request, response, next) => {
     Person.find({}).then(
         result => {
