@@ -53,7 +53,7 @@ const generateId = () => {
 }
 
 app.get('/info', (request, response) => {
-    response.send('<h1>Phonebook API</h1> <a href="/info">Information</a>')
+    response.send('<h1>Phonebook API</h1> <a href="/info/details">Information</a>')
 })
 
 app.get('/api/persons', (request, response) => {
