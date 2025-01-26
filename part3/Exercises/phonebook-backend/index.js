@@ -79,7 +79,7 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-app.get('/info', (request, response) => {
+app.get('/info/details', (request, response) => {
     const page = `
         <h1>Info</h1>
         <p>There is information for ${data.length} people in the phonebook.</p>
