@@ -12,6 +12,8 @@ app.use(cors())
 
 morgan.token('body', request => { return JSON.stringify(request.body) })
 
+//  Deployed to render
+
 app.use(
   morgan(function (tokens, req, res) {
     let addedInfo = req => req.method === 'POST' ? tokens.body(req) : ''
