@@ -66,10 +66,16 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    Person.findOne({ _id: id })
-    .then(result => response.json(result))
-    .catch(error => response.status(404).send('404 Person Not Found'))
+    Person.findById(request.params.id)
+    .then(result => {
+      if (result) {
+        response.json(result)
+      }
+      else {
+        response.status(404).send('404 Person Not Found')
+      }
+    })
+    .catch(error => response.status(500).end())
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -111,23 +117,23 @@ app.post('/api/persons', (request, response) => {
       })
     }
 
-    if (data.find(p => p.name === body.name)) {
-      return response.status(400).json({
-      error: 'Name must be unique'
-      })
-    }
+    // if (data.find(p => p.name === body.name)) {
+    //   return response.status(400).json({
+    //   error: 'Name must be unique'
+    //   })
+    // }
 
-    const person = {
+    const person = new Person({
       name: body.name,
       number: body.number,
-      id: generateId()
-    }
+    })
 
-    data = data.concat(person)
-    
-    morgan('tiny :body')
+    // data = data.concat(person)
 
-    response.json(person)
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
+
 })
 
 const PORT = process.env.PORT || 3001
